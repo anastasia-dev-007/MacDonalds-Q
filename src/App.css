@@ -36,3 +36,20 @@
     transform: rotate(360deg);
   }
 }
+
+.clientInterface, .kitchenInterface {
+  display: flex;
+  gap: 50px;
+}
+
+.clientInterface div, .kitchenInterface div {
+  border: solid 1px;
+  width: 200px;
+  padding: 10px;
+  margin: 10px;
+}
+
+.clientInterface h4, .kitchenInterface h4 {
+  text-align: center;
+}
+
