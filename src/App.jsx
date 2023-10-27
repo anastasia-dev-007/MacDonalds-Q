@@ -137,7 +137,7 @@ function App() {
           <div className="preparing">
             <h4>Preparing</h4>
             <ol>
-            {pendingOrder.length === 0 ? (
+            {preparingOrder.length === 0 ? (
                 <p>No preparing orders yet!</p>
               ) : (
               preparingOrder
@@ -158,7 +158,7 @@ function App() {
           <div className="done">
             <h4>Done</h4>
             <ol>
-            {pendingOrder.length === 0 ? (
+            {doneOrder.length === 0 ? (
                 <p>No done orders yet!</p>
               ) : (
               doneOrder
