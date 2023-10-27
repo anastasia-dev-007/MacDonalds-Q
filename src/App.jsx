@@ -2,6 +2,10 @@ import './App.css';
 import React, { useState } from 'react';
 
 function App() {
+  const [order, setOrder] = useState([]);
+  const [pendingOrder, setPendingOrder] = useState([]);
+  const [preparingOrder, setPreparingOrder] = useState([]);
+
   const menu = [
     {
       id: 1,
@@ -21,21 +25,22 @@ function App() {
     }
   ];
 
-  const [order, setOrder] = useState([]);
-
-
   const addToOrder = (item) => {
     setOrder([...order, item]);
   };
-
-  const [pendingOrder, setPendingOrder] = useState([]);
 
   const finishOrder = () => {
     if (order.length > 0) {
       setPendingOrder([...pendingOrder, order]);
       setOrder([]);
     }
+  };
 
+  const moveToPreparing = (order) => {
+    if (pendingOrder.length > 0) {
+      setPreparingOrder([...preparingOrder, order]);
+      setPendingOrder(pendingOrder.filter((pending) => pending !== order));
+    }
   };
 
   return (
@@ -73,38 +78,49 @@ function App() {
       </div>
 
       <hr />
-      
+
       <div>
         <h3>Kitchen Interface</h3>
 
         <div className="kitchenInterface">
-        <div className="pending">
-          <h4>Pending</h4>
+          <div className="pending">
+            <h4>Pending</h4>
 
-          <ol>
-            {pendingOrder.map((order, index) => (
-              <li key={index}>
-                <h5>Order {index + 1}</h5>
-                <ul>
-                  {order.map(item =>
-                    <li key={item.id}>{item.title}</li>)}
-                </ul>
-              </li>
-            ))}
-          </ol>
-        </div>
+            <ol>
+              {pendingOrder.map((order, index) => (
+                <li key={index}
+                  onClick={() => moveToPreparing(order)}>
+                  <h5>Order {index + 1}</h5>
+                  <ul>
+                    {order.map(item =>
+                      <li key={item.id}>{item.title}</li>)}
+                  </ul>
+                </li>
+              ))}
+            </ol>
+          </div>
 
-        <div className="preparing">
-        <h4>Preparing</h4>
+          <div className="preparing">
+            <h4>Preparing</h4>
+            <ol>
+              {preparingOrder.map((order, index) => (
+                <li key={index}>
+                  <h5>Order {index + 1}</h5>
+                  <ul>
+                    {order.map(item =>
+                      <li key={item.id}>{item.title}</li>)}
+                  </ul>
+                </li>))}
+            </ol>
 
-        </div>
+          </div>
 
-        <div className="done">
-        <h4>Done</h4>
+          <div className="done">
+            <h4>Done</h4>
 
+          </div>
         </div>
       </div>
-        </div>
     </div>
   );
 }
