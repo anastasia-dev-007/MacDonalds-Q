@@ -29,7 +29,7 @@ function App() {
   const addToOrder = (item) => {
     const newOrder = {
       ...item,
-      status:'pending',
+      status: 'pending',
     };
     setOrder([...order, newOrder]);
   };
@@ -89,16 +89,19 @@ function App() {
           <div className="order">
             <h4>Order</h4>
             <ul>
-              {order.map(item => (
-                <li key={item.id}>
-                  {item.title}
-                </li>
-              ))}
+              {order.length === 0 ? (
+                <p>Please select items from the menu to create your order!</p>
+              ) : (
+                order.map(item => (
+                  <li key={item.id}>
+                    {item.title}
+                  </li>
+                )))}
             </ul>
           </div>
         </div>
 
-        <button onClick={() => finishOrder()}>Finish Order</button>
+        <button disabled={order.length === 0} onClick={() => finishOrder()}>Finish Order</button>
       </div>
 
       <hr />
@@ -111,35 +114,43 @@ function App() {
             <h4>Pending</h4>
 
             <ol>
-              {pendingOrder
-              .filter(order => order.some(item => item.status === 'pending'))
-              .map((order, index) => (
-                <li key={index}
-                  onClick={() => moveToPreparing(order)}>
-                  <h5>Order {index + 1}</h5>
-                  <ul>
-                    {order.map(item =>
-                      <li key={item.id}>{item.title}</li>)}
-                  </ul>
-                </li>
-              ))}
+              {pendingOrder.length === 0 ? (
+                <p>No pending orders yet!</p>
+              ) : (
+                pendingOrder
+                  .filter(order => order.some(item => item.status === 'pending'))
+                  .map((order, index) => (
+                    <li key={index} onClick={() => moveToPreparing(order)}>
+                      <h5>Order {index + 1}</h5>
+                      <ul>
+                        {order.map(item => (
+                          <li key={item.id}>{item.title}</li>
+                        ))}
+                      </ul>
+                    </li>
+                  ))
+              )}
             </ol>
+
           </div>
 
           <div className="preparing">
             <h4>Preparing</h4>
             <ol>
-              {preparingOrder
-              .filter(order => order.some(item => item.status === 'preparing'))
-              .map((order, index) => (
-                <li key={index}
-                onClick={() => moveToDone(order)}>
-                  <h5>Order {index + 1}</h5>
-                  <ul>
-                    {order.map(item =>
-                      <li key={item.id}>{item.title}</li>)}
-                  </ul>
-                </li>))}
+            {pendingOrder.length === 0 ? (
+                <p>No preparing orders yet!</p>
+              ) : (
+              preparingOrder
+                .filter(order => order.some(item => item.status === 'preparing'))
+                .map((order, index) => (
+                  <li key={index}
+                    onClick={() => moveToDone(order)}>
+                    <h5>Order {index + 1}</h5>
+                    <ul>
+                      {order.map(item =>
+                        <li key={item.id}>{item.title}</li>)}
+                    </ul>
+                  </li>)))}
             </ol>
 
           </div>
@@ -147,17 +158,20 @@ function App() {
           <div className="done">
             <h4>Done</h4>
             <ol>
-              {doneOrder
-              .filter(order => order.some(item => item.status === 'done'))
-              .map((order, index) => (
-                <li key={index}>
-                  <h5>Order {index + 1}</h5>
-                  <ul>
-                    {order.map(item =>
-                      <li key={item.id}>{item.title}</li>)}
-                  </ul>
-                </li>
-              ))}
+            {pendingOrder.length === 0 ? (
+                <p>No done orders yet!</p>
+              ) : (
+              doneOrder
+                .filter(order => order.some(item => item.status === 'done'))
+                .map((order, index) => (
+                  <li key={index}>
+                    <h5>Order {index + 1}</h5>
+                    <ul>
+                      {order.map(item =>
+                        <li key={item.id}>{item.title}</li>)}
+                    </ul>
+                  </li>
+                )))}
             </ol>
           </div>
         </div>
