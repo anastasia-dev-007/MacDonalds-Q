@@ -5,6 +5,7 @@ function App() {
   const [order, setOrder] = useState([]);
   const [pendingOrder, setPendingOrder] = useState([]);
   const [preparingOrder, setPreparingOrder] = useState([]);
+  const [doneOrder, setDoneOrder] = useState([]);
 
   const menu = [
     {
@@ -40,6 +41,13 @@ function App() {
     if (pendingOrder.length > 0) {
       setPreparingOrder([...preparingOrder, order]);
       setPendingOrder(pendingOrder.filter((pending) => pending !== order));
+    }
+  };
+
+  const moveToDone = (order) => {
+    if (preparingOrder.length > 0) {
+      setDoneOrder([...doneOrder, order]);
+      setPreparingOrder(preparingOrder.filter((done) => done !== order));
     }
   };
 
@@ -104,7 +112,8 @@ function App() {
             <h4>Preparing</h4>
             <ol>
               {preparingOrder.map((order, index) => (
-                <li key={index}>
+                <li key={index}
+                onClick={() => moveToDone(order)}>
                   <h5>Order {index + 1}</h5>
                   <ul>
                     {order.map(item =>
@@ -117,7 +126,17 @@ function App() {
 
           <div className="done">
             <h4>Done</h4>
-
+            <ol>
+              {doneOrder.map((order, index) => (
+                <li key={index}>
+                  <h5>Order {index + 1}</h5>
+                  <ul>
+                    {order.map(item =>
+                      <li key={item.id}>{item.title}</li>)}
+                  </ul>
+                </li>
+              ))}
+            </ol>
           </div>
         </div>
       </div>
