@@ -199,7 +199,7 @@ function App() {
                 .filter((order) => order.status === 'pending')
                 .map((order) => (
                   <li key={order.id} onClick={() => moveToPreparing(order.id)}>
-                    <p>Order {order.id} - ${order.totalPrice}</p>
+                    <p><b>Order {order.id} - ${order.totalPrice}</b></p>
                     {order.menuItems.map((item) => (
                       <ul>
                         <li key={item.id}>{item.title}</li>
@@ -223,7 +223,7 @@ function App() {
                 .map((order) => (
                   <li key={order.id}
                   onClick={() => moveToDone(order.id)}>
-                    <p>Order {order.id} - ${order.totalPrice}</p>
+                    <p><b>Order {order.id} - ${order.totalPrice}</b></p>
                     {order.menuItems.map((item) => (
                       <ul>
                         <li key={item.id}>{item.title}</li>
@@ -246,7 +246,7 @@ function App() {
                 .sort((a, b) => a.timeDone - b.timeDone) // Sort by the time they were marked as preparing
                 .map((order) => (
                   <li key={order.id}>
-                    <p>Order {order.id}  - ${order.totalPrice}</p>
+                    <p><b>Order {order.id}  - ${order.totalPrice}</b></p>
                     {order.menuItems.map((item) => (
                       <ul>
                         <li key={item.id}>{item.title}</li>
