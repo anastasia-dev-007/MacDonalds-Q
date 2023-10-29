@@ -17,7 +17,7 @@ function App() {
     },
     {
       id: 3,
-      title: 'Potatoes Fri',
+      title: 'Fries',
       currency: '$',
       price: 2.99,
     },
@@ -38,6 +38,30 @@ function App() {
       title: 'Milkshake',
       currency: '$',
       price: 6.99,
+    },
+    {
+      id: 7,
+      title: 'Shrimps',
+      currency: '$',
+      price: 7.99,
+    },
+    {
+      id: 8,
+      title: 'McCrispy',
+      currency: '$',
+      price: 16.99,
+    },
+    {
+      id: 9,
+      title: 'Chicken Wrap',
+      currency: '$',
+      price: 8.49,
+    },
+    {
+      id: 10,
+      title: 'Vanila donut',
+      currency: '$',
+      price: 5.79,
     },
   ];
 
@@ -120,7 +144,7 @@ function App() {
   return (
     <div>
       <div>
-        <h3>Client Interface</h3>
+        <h3>PLACING ORDER</h3>
 
         <div className="clientInterface">
           <div className="menu">
@@ -161,7 +185,7 @@ function App() {
       <hr />
 
       <div>
-        <h3>Kitchen Interface</h3>
+        <h3>TRACKING ORDER</h3>
 
         <div className="kitchenInterface">
           <div className="pending">
