@@ -37,19 +37,19 @@
   }
 }
 
-.clientInterface, .kitchenInterface {
+.placingOrderInterface, .trackingOrderInterface {
   display: flex;
   gap: 50px;
 }
 
-.clientInterface div, .kitchenInterface div {
+.placingOrderInterface div, .trackingOrderInterface div {
   border: solid 1px;
   width: 300px;
   padding: 10px;
   margin: 10px;
 }
 
-.clientInterface h4, .kitchenInterface h4 {
+.placingOrderInterface h4, .trackingOrderInterface h4 {
   text-align: center;
 }
 

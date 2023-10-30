@@ -155,7 +155,7 @@ return (
     <div>
       <h3>PLACING ORDER</h3>
 
-      <div className="clientInterface">
+      <div className="placingOrderInterface">
         <div className="menu">
           <h4>Menu</h4>
           <ul>
@@ -197,7 +197,7 @@ return (
     <div>
       <h3>TRACKING ORDER</h3>
 
-      <div className="kitchenInterface">
+      <div className="trackingOrderInterface">
         <div className="pending">
           <h4>Pending</h4>
           {orders
