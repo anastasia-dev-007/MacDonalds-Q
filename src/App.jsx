@@ -1,5 +1,8 @@
 import './App.css';
 import React, { useState } from 'react';
+import Menu from './components/Menu/Menu';
+import Orders from './components/Orders/Orders';
+import Track from './components/Track';
 
 function App() {
   const menu = [
@@ -87,7 +90,6 @@ function App() {
     setSelectedItems(updatedSelectedItems);
   };
 
-
   const createOrder = () => {
     const time = Date.now();
 
@@ -152,106 +154,31 @@ function App() {
         <h3>PLACING ORDER</h3>
 
         <div className="placingOrderInterface">
-          <div className="menu">
-            <h4>Menu</h4>
-            <ul>
-              {menu.map((item) => (
-                <li key={item.id} onClick={() => handleItemClick(item)}>
-                  {item.title} - {item.currency} {item.price}
-                </li>
-              ))}
-            </ul>
-          </div>
 
-          <div className="order">
-            <h4>Order</h4>
-            {selectedItems.length === 0 ?
-              <p>Please select products from menu, and when you're ready, click "Finish Order." You can track status of your order on displays in the restaurant. </p> : (
-                <ul>
-                  {selectedItems.map((item) => (
-                    <li key={item.id}>{item.title} - {item.currency} {item.price}
-                      <button onClick={() => removeSelectedItem(item)}>Remove</button></li>
-                  ))}
-                </ul>
-              )}
-          </div>
+          <Menu menu={menu} handleItemClick={handleItemClick}></Menu>
+
+          <Orders
+            selectedItems={selectedItems}
+            removeSelectedItem={removeSelectedItem}
+            orderConfirmation={orderConfirmation}
+            createOrder={createOrder}
+          >
+          </Orders>
+
         </div>
-
-        <button disabled={selectedItems.length === 0} onClick={createOrder}>Finish Order</button>
-
-        <h4 style={{ color: 'green' }}>
-          {/* Display the order confirmation message */}
-          {orderConfirmation && (
-            <p>Your order number is: Order no.{orderConfirmation}. Follow its progress on displays in the restaurant.</p>
-          )}
-        </h4>
       </div>
-
 
       <hr />
 
-      <div>
-        <h3>TRACKING ORDER</h3>
-
-        <div className="trackingOrderInterface">
-          <div className="pending">
-            <h4>Pending</h4>
-            {pendingOrders.length === 0 ?
-              <p>No pending orders. </p> : (
-                <ol>
-                  {pendingOrders.map((order) => (
-                    <li key={order.id} onClick={() => moveToPreparing(order.id)}>
-                      <p><b>Order {order.id} - ${order.totalPrice}</b></p>
-                      <ul>
-                        {order.menuItems.map((item) => (
-                          <li key={item.id}>{item.title}</li>
-                        ))}
-                      </ul>
-                    </li>
-                  ))}
-                </ol>)}
-          </div>
-
-          <div className="preparing">
-            <h4>Preparing</h4>
-            {preparingOrders.length === 0 ?
-              <p>No preparing orders. </p> : (
-                <ol>
-                  {preparingOrders.map((order) => (
-                    <li key={order.id}
-                      onClick={() => moveToDone(order.id)}>
-                      <p><b>Order {order.id} - ${order.totalPrice}</b></p>
-                      <ul>
-                        {order.menuItems.map((item) => (
-                          <li key={item.id}>{item.title}</li>
-                        ))}
-                      </ul>
-                    </li>
-                  ))}
-                </ol>)}
-          </div>
-
-          <div className="done">
-            <h4>Done</h4>
-            {doneOrders.length === 0 ?
-              <p>No done orders. </p> : (
-                <ol>
-                  {doneOrders.map((order) => (
-                    <li key={order.id}>
-                      <p><b>Order {order.id}  - ${order.totalPrice}</b></p>
-                      <ul>
-                        {order.menuItems.map((item) => (
-                          <li key={item.id}>{item.title}</li>
-                        ))}
-                      </ul>
-                      <button
-                        onClick={() => pickUpOrder(order)}>Pick-up</button>
-                    </li>
-                  ))}
-                </ol>)}
-          </div>
-        </div>
-      </div>
+      <Track
+        pendingOrders={pendingOrders}
+        preparingOrders={preparingOrders}
+        doneOrders={doneOrders}
+        moveToPreparing={moveToPreparing}
+        moveToDone={moveToDone}
+        pickUpOrder={pickUpOrder}
+      >
+      </Track>
     </div>
   );
 }
