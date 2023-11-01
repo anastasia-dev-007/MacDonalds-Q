@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Track = ({pendingOrders,preparingOrders, doneOrders, moveToPreparing,moveToDone, pickUpOrder}) => {
+const Track = ({pendingOrders,preparingOrders, doneOrders, moveToPreparing,moveToDone, pickUpOrder}) => { //Am gasit aceasta abordare in loc de props si mi-a parut mai comoda. E ok asa?
   return (
     <div>
         <h3>TRACKING ORDER</h3>

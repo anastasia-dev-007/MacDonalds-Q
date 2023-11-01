@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Orders = ({selectedItems, removeSelectedItem, orderConfirmation, createOrder}) => {
+const Orders = ({selectedItems, removeSelectedItem, orderConfirmation, createOrder}) => { //Am gasit aceasta abordare in loc de props si mi-a parut mai comoda. E ok asa?
   return (
     <div className="order">
     <h4>Order</h4>
