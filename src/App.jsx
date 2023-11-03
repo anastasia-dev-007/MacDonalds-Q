@@ -1,8 +1,5 @@
 import './App.css';
 import React, { useState } from 'react';
-import Menu from './components/Menu/Menu';
-import Orders from './components/Orders/Orders';
-import Track from './components/Track';
 
 function App() {
   const menu = [
@@ -73,22 +70,51 @@ function App() {
   const [orderConfirmation, setOrderConfirmation] = useState(null);
   const pendingOrders = orders.filter((order) => order.status === 'pending');
   const preparingOrders = orders.filter((order) => order.status === 'preparing').sort((a, b) => a.timePreparing - b.timePreparing); // Sort by the time they were marked as preparing
-
   const doneOrders = orders.filter((order) => order.status === 'done').sort((a, b) => a.timeDone - b.timeDone); // Sort by the time they were marked as preparing
 
 
+  //groupedItems will be an object where the keys are id of menu items, and the values are arrays of menu items. 
+  const groupedItems = selectedItems.reduce((acc, item) => {
+    const { id } = item;//This line extracts the id property from the "item" object using destructuring and allows to access the id property further
+
+    if (!acc[id]) {// Check if an array for the current ID already exists in the accumulator
+      acc[id] = {
+        count: 0,
+        firstItem: null,
+      }; // If not, create an empty array for the ID
+    }
+
+    acc[id].count++;
+    if (!acc[id].firstItem) {
+      acc[id].firstItem = item;
+    }
+
+    return acc;
+  }, {});
+
+  console.log(groupedItems);
+
   const handleItemClick = (item) => {
-    //added unique id by Radu's reco. Otherwise it had deleted incorrectly items
-    const uniqueId = selectedItems.length > 0 ? selectedItems[selectedItems.length - 1].id + 1 : 1;
-    const selectedItem = { ...item, id: uniqueId }
-    setSelectedItems([...selectedItems, selectedItem]);
+    // //added unique id by Radu's reco. Otherwise it had deleted incorrectly items
+    // const uniqueId = selectedItems.length > 0 ? selectedItems[selectedItems.length - 1].id + 1 : 1;
+    // const selectedItem = { ...item, id: uniqueId }
+
+    setSelectedItems([...selectedItems, item]);
   };
 
+  //AICI TOT SA MODIFIC CA EL SA STEARGA INTREG GRUPUL
   const removeSelectedItem = (item) => {
     const updatedSelectedItems = selectedItems.filter((selectedItem) => selectedItem.id !== item.id);
 
     setSelectedItems(updatedSelectedItems);
   };
+
+  const removeItem = () => {
+  };
+
+  const addItem = () => {
+  };
+  
 
   const createOrder = () => {
     const time = Date.now();
@@ -97,12 +123,29 @@ function App() {
       (total, item) => total + item.price, 0
     );
 
+    // Create groupedItems object
+    const groupedItems = selectedItems.reduce((acc, item) => {
+      const { id } = item;
+
+      if (!acc[id]) {
+        acc[id] = {
+          count: 0,
+          firstItem: item,
+        };
+      }
+
+      acc[id].count++;
+
+      return acc;
+    }, {});
+
     const newOrder = {
       id: orders.length + 1,
       menuItems: selectedItems,
       status: 'pending',
       time: time,
       totalPrice: totalOrderPrice,
+      groupedItems: Object.values(groupedItems),//added
     };
 
     setOrders([...orders, newOrder]);
@@ -155,29 +198,116 @@ function App() {
 
         <div className="placingOrderInterface">
 
-          <Menu menu={menu} handleItemClick={handleItemClick}></Menu>
+          <div className="menu">
+            <h4>Menu</h4>
+            <ul>
+              {menu.map((item) => (
+                <li key={item.id} onClick={() => handleItemClick(item)}>
+                  {item.title} - {item.currency} {item.price}
+                </li>
+              ))}
+            </ul>
+          </div>
 
-          <Orders
-            selectedItems={selectedItems}
-            removeSelectedItem={removeSelectedItem}
-            orderConfirmation={orderConfirmation}
-            createOrder={createOrder}
-          >
-          </Orders>
+          <div className="order">
+            <h4>Order</h4>
+            {selectedItems.length === 0 ?
+              <p>Please select products from menu, and when you're ready, click "Finish Order." You can track status of your order on displays in the restaurant. </p> : (
+                <ul>
+                  {Object.entries(groupedItems).map(([id, { count, firstItem }]) => (
+                    <li key={id}>
+                      {firstItem.title} - {firstItem.currency} {firstItem.price} <button onClick={() => removeItem()}>-</button>(x{count})<button onClick={() => addItem()}>+</button>
+                      <button onClick={() => removeSelectedItem(firstItem)}>Remove</button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+            <button disabled={selectedItems.length === 0} onClick={createOrder}>Finish Order</button>
+
+            <h4 style={{ color: 'green' }}>
+              {/* Display the order confirmation message */}
+              {orderConfirmation && (
+                <p>ORDER No.{orderConfirmation}. Follow its progress on displays in the restaurant.</p>
+              )}
+            </h4>
+          </div>
         </div>
       </div>
 
       <hr />
 
-      <Track
-        pendingOrders={pendingOrders}
-        preparingOrders={preparingOrders}
-        doneOrders={doneOrders}
-        moveToPreparing={moveToPreparing}
-        moveToDone={moveToDone}
-        pickUpOrder={pickUpOrder}
-      >
-      </Track>
+      <div>
+        <h3>TRACKING ORDER</h3>
+
+        <div className="trackingOrderInterface">
+          <div className="pending">
+            <h4>Pending</h4>
+            {pendingOrders.length === 0 ?
+              (
+                <p>No pending orders. </p>
+              ) : (
+                <ol>
+                  {pendingOrders.map((order) => (
+                    <li key={order.id} onClick={() => moveToPreparing(order.id)}>
+                      <p><b>Order {order.id} - ${order.totalPrice}</b></p>
+                      <ul>
+                        {Object.values(order.groupedItems).map((group) => (
+                          <li key={group.firstItem.id}>
+                            {group.firstItem.title} - {group.firstItem.currency} {group.firstItem.price} (x{group.count})
+                          </li>
+                        ))}
+                      </ul>
+                    </li>
+                  ))}
+                </ol>
+              )}
+          </div>
+
+          <div className="preparing">
+            <h4>Preparing</h4>
+            {preparingOrders.length === 0 ?
+              <p>No preparing orders. </p> : (
+                <ol>
+                  {preparingOrders.map((order) => (
+                    <li key={order.id}
+                      onClick={() => moveToDone(order.id)}>
+                      <p><b>Order {order.id} - ${order.totalPrice}</b></p>
+                      <ul>
+                        {Object.values(order.groupedItems).map((group) => (
+                          <li key={group.firstItem.id}>
+                            {group.firstItem.title} - {group.firstItem.currency} {group.firstItem.price} (x{group.count})
+                          </li>
+                        ))}
+                      </ul>
+                    </li>
+                  ))}
+                </ol>)}
+          </div>
+
+          <div className="done">
+            <h4>Done</h4>
+            {doneOrders.length === 0 ?
+              <p>No done orders. </p> : (
+                <ol>
+                  {doneOrders.map((order) => (
+                    <li key={order.id}>
+                      <p><b>Order {order.id}  - ${order.totalPrice}</b></p>
+                      <ul>
+                        {Object.values(order.groupedItems).map((group) => (
+                          <li key={group.firstItem.id}>
+                            {group.firstItem.title} - {group.firstItem.currency} {group.firstItem.price} (x{group.count})
+                          </li>
+                        ))}
+                      </ul>
+                      <button
+                        onClick={() => pickUpOrder(order)}>Pick-up</button>
+                    </li>
+                  ))}
+                </ol>)}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
