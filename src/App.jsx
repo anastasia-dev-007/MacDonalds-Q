@@ -109,12 +109,24 @@ function App() {
     setSelectedItems(updatedSelectedItems);
   };
 
-  const removeItem = () => {
+  const removeItem = (itemToRemove) => {
+    const copySelectedItems = [...selectedItems]; //this is the copy of the selectedItems array to avoid directly modifying the state
+
+    const index = copySelectedItems.findIndex((item) => item.id === itemToRemove.id);// Find the index of the item to be removed in the copySelectedItems array
+
+    if (index !== -1) {
+      if (copySelectedItems[index].count > 1) { // If the item is found and its count is greater than 1, decrease its count by 1
+        copySelectedItems[index].count -= 1;
+      } else {
+        copySelectedItems.splice(index, 1);// If the count is 1, remove the item from the array
+      }
+      setSelectedItems(copySelectedItems); //update state
+    }
   };
 
   const addItem = () => {
   };
-  
+
 
   const createOrder = () => {
     const time = Date.now();
@@ -216,7 +228,7 @@ function App() {
                 <ul>
                   {Object.entries(groupedItems).map(([id, { count, firstItem }]) => (
                     <li key={id}>
-                      {firstItem.title} - {firstItem.currency} {firstItem.price} <button onClick={() => removeItem()}>-</button>(x{count})<button onClick={() => addItem()}>+</button>
+                      {firstItem.title} - {firstItem.currency} {firstItem.price} <button onClick={() => removeItem(firstItem)}>-</button>(x{count})<button onClick={() => addItem()}>+</button>
                       <button onClick={() => removeSelectedItem(firstItem)}>Remove</button>
                     </li>
                   ))}
@@ -250,7 +262,7 @@ function App() {
                 <ol>
                   {pendingOrders.map((order) => (
                     <li key={order.id} onClick={() => moveToPreparing(order.id)}>
-                      <p><b>Order {order.id} - ${order.totalPrice}</b></p>
+                      <p><b>Order {order.id} - ${order.totalPrice.toFixed(2)}</b></p>
                       <ul>
                         {Object.values(order.groupedItems).map((group) => (
                           <li key={group.firstItem.id}>
