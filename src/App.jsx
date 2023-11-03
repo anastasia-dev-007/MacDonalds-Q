@@ -72,7 +72,6 @@ function App() {
   const preparingOrders = orders.filter((order) => order.status === 'preparing').sort((a, b) => a.timePreparing - b.timePreparing); // Sort by the time they were marked as preparing
   const doneOrders = orders.filter((order) => order.status === 'done').sort((a, b) => a.timeDone - b.timeDone); // Sort by the time they were marked as preparing
 
-
   //groupedItems will be an object where the keys are id of menu items, and the values are arrays of menu items. 
   const groupedItems = selectedItems.reduce((acc, item) => {
     const { id } = item;//This line extracts the id property from the "item" object using destructuring and allows to access the id property further
@@ -102,7 +101,6 @@ function App() {
     setSelectedItems([...selectedItems, item]);
   };
 
-  //AICI TOT SA MODIFIC CA EL SA STEARGA INTREG GRUPUL
   const removeSelectedItem = (item) => {
     const updatedSelectedItems = selectedItems.filter((selectedItem) => selectedItem.id !== item.id);
 
