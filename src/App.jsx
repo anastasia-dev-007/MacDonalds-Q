@@ -124,9 +124,21 @@ function App() {
     }
   };
 
-  const addItem = () => {
-  };
+  //now we do exactly the same to the addItem
+  const addItem = (itemToAdd) => {
+    const copySelectedItems = [...selectedItems]; 
 
+    const index = copySelectedItems.findIndex((item) => item.id === itemToAdd.id);
+
+    if (index !== -1) {
+      if (copySelectedItems[index].count > 1) { 
+        copySelectedItems[index].count += 1;
+      } else {
+        copySelectedItems.push(itemToAdd);// now push it
+      }
+      setSelectedItems(copySelectedItems); //update state
+    }
+  };
 
   const createOrder = () => {
     const time = Date.now();
@@ -228,7 +240,11 @@ function App() {
                 <ul>
                   {Object.entries(groupedItems).map(([id, { count, firstItem }]) => (
                     <li key={id}>
-                      {firstItem.title} - {firstItem.currency} {firstItem.price} <button onClick={() => removeItem(firstItem)}>-</button>(x{count})<button onClick={() => addItem()}>+</button>
+                      {firstItem.title} - {firstItem.currency} {firstItem.price}
+                      <button onClick={() => removeItem(firstItem)}>-</button>
+                      {/** Why paramtere is "firstItem" instead of just "item". Because When you click the "Remove" button for a group, it should remove one instance of that specific item. If you were to use item without specifying which one, you might remove all instances of that item with the same id. By passing firstItem as a parameter to the removeItem function, you are explicitly specifying which item to remove, ensuring that only one instance of that item is removed from the list of selected items. */}
+                      (x{count})
+                      <button onClick={() => addItem(firstItem)}>+</button>
                       <button onClick={() => removeSelectedItem(firstItem)}>Remove</button>
                     </li>
                   ))}
