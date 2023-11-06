@@ -1,8 +1,9 @@
 import './App.css';
 import React, { useState } from 'react';
 import Menu from './components/Menu/Menu';
-import Orders from './components/Orders/Orders';
+import Order from './components/Order/Order';
 import Track from './components/Track';
+import Orders from './components/Orders/Orders';
 
 function App() {
   const menu = [
@@ -75,70 +76,24 @@ function App() {
   const preparingOrders = orders.filter((order) => order.status === 'preparing').sort((a, b) => a.timePreparing - b.timePreparing); // Sort by the time they were marked as preparing
   const doneOrders = orders.filter((order) => order.status === 'done').sort((a, b) => a.timeDone - b.timeDone); // Sort by the time they were marked as preparing
 
-  //groupedItems will be an object where the keys are id of menu items, and the values are arrays of menu items. 
-  const groupedItems = selectedItems.reduce((acc, item) => {
-    const { id } = item;//This line extracts the id property from the "item" object using destructuring and allows to access the id property further
-
-    if (!acc[id]) {// Check if an array for the current ID already exists in the accumulator
-      acc[id] = {
-        count: 0,
-        firstItem: null,
-      }; // If not, create an empty array for the ID
-    }
-
-    acc[id].count++;
-    if (!acc[id].firstItem) {
-      acc[id].firstItem = item;
-    }
-
-    return acc;
-  }, {});
-
-  console.log(groupedItems);
-
-  const handleItemClick = (item) => {
-    // //added unique id by Radu's reco. Otherwise it had deleted incorrectly items
-    // const uniqueId = selectedItems.length > 0 ? selectedItems[selectedItems.length - 1].id + 1 : 1;
-    // const selectedItem = { ...item, id: uniqueId }
-
+  const addMenuItemToOrder = (item) => {
     setSelectedItems([...selectedItems, item]);
   };
 
-  const removeSelectedItem = (item) => {
+  const removeAllMenuItemsById = (item) => {
     const updatedSelectedItems = selectedItems.filter((selectedItem) => selectedItem.id !== item.id);
 
     setSelectedItems(updatedSelectedItems);
   };
 
-  const removeItem = (itemToRemove) => {
-    const copySelectedItems = [...selectedItems]; //this is the copy of the selectedItems array to avoid directly modifying the state
-
-    const index = copySelectedItems.findIndex((item) => item.id === itemToRemove.id);// Find the index of the item to be removed in the copySelectedItems array
-
-    if (index !== -1) {
-      if (copySelectedItems[index].count > 1) { // If the item is found and its count is greater than 1, decrease its count by 1
-        copySelectedItems[index].count -= 1;
-      } else {
-        copySelectedItems.splice(index, 1);// If the count is 1, remove the item from the array
-      }
-      setSelectedItems(copySelectedItems); //update state
-    }
-  };
-
-  //now we do exactly the same to the addItem
-  const addItem = (itemToAdd) => {
-    const copySelectedItems = [...selectedItems]; 
-
-    const index = copySelectedItems.findIndex((item) => item.id === itemToAdd.id);
+  //simplified by Radu
+  const removeMenuItemFromOrder = (itemToRemove) => {
+    const index = selectedItems.findIndex((item) => item.id === itemToRemove.id);// Find the index of the item to be removed in the copySelectedItems array
 
     if (index !== -1) {
-      if (copySelectedItems[index].count > 1) { 
-        copySelectedItems[index].count += 1;
-      } else {
-        copySelectedItems.push(itemToAdd);// now push it
-      }
-      setSelectedItems(copySelectedItems); //update state
+      selectedItems.splice(index, 1);// If the count is 1, remove the item from the array
     }
+    setSelectedItems([...selectedItems]); //update state
   };
 
   const createOrder = () => {
@@ -177,26 +132,24 @@ function App() {
 
     setSelectedItems([]);
 
-    // Show the confirmation message with order ID
-    setOrderConfirmation(newOrder.id);
+    setOrderConfirmation(newOrder.id);// Show the confirmation message with order ID
 
-    // Hide the confirmation message after 2 seconds
-    setTimeout(() => {
+    setTimeout(() => {    // Hide the confirmation message after 2 seconds
       setOrderConfirmation(null);
     }, 5000);
   };
 
-  const moveToPreparing = (orderId) => {
+  const moveToPreparing = ({ id }) => {//am scos id din order
     const index = orders.findIndex(item =>
-      item.id === orderId)
+      item.id === id)
     orders[index].status = 'preparing';
     orders[index].timePreparing = Date.now();
 
     setOrders([...orders]);
   };
 
-  const moveToDone = (orderId) => {
-    const index = orders.findIndex(item => item.id === orderId);
+  const moveToDone = ({ id }) => {//am scos id din order
+    const index = orders.findIndex(item => item.id === id);
     orders[index].status = 'done';
     orders[index].timeDone = Date.now();
 
@@ -224,19 +177,16 @@ function App() {
         <div className="placingOrderInterface">
 
           <Menu
-          menu={menu}
-          handleItemClick={handleItemClick}>
-          </Menu>
+            menu={menu}
+            addMenuItemToOrder={addMenuItemToOrder} />
 
-         <Orders
-         selectedItems={selectedItems}
-         groupedItems={groupedItems}
-         removeItem={removeItem}
-         addItem={addItem}
-         removeSelectedItem={removeSelectedItem}
-         createOrder={createOrder}
-         orderConfirmation={orderConfirmation}
-         ></Orders>
+          <Order
+            selectedItems={selectedItems}
+            removeMenuItemFromOrder={removeMenuItemFromOrder}
+            addItem={addMenuItemToOrder}
+            removeAllMenuItemsById={removeAllMenuItemsById}
+            createOrder={createOrder}
+            orderConfirmation={orderConfirmation} />
         </div>
       </div>
 
@@ -245,15 +195,11 @@ function App() {
       <div>
         <h3>TRACKING ORDER</h3>
 
-        <Track
-        pendingOrders={pendingOrders}
-        preparingOrders={preparingOrders}
-        doneOrders={doneOrders}
-        moveToPreparing={moveToPreparing}
-        moveToDone={moveToDone}
-        pickUpOrder={pickUpOrder}
-        >
-        </Track>
+        <div className="trackingOrderInterface">
+          <Orders orders={pendingOrders} type="Pending" handleOnClick={moveToPreparing} />
+          <Orders orders={preparingOrders} type="Preparing" handleOnClick={moveToDone} />
+          <Orders orders={doneOrders} type="Done" handleOnClick={pickUpOrder} />
+        </div>
       </div>
     </div>
   );
